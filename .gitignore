@@ -1,54 +1,231 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
+# -*- coding: cp1251 -*-
+import random,pygame, sys
+#Создаём окно программы
+window = pygame.display.set_mode((600,630))
+#Задаём имя окна
+pygame.display.set_caption("hello world")
+#создаём рабочую область 
+screen = pygame.Surface((600,600))
+#Строка состояния
+info_string = pygame.Surface((600,30))
+                        #СОЗДАНИЕ КЛАССА SPRITE
+class Sprite__init__():
+ def __init__(self,xpos,ypos,filename):
+     self.x = xpos
+     self.y = ypos
+     self.bitmap = pygame.image.load(filename)
+     
+     self.bitmap.set_colorkey((0,0,0))
+     self.bitmap.set_colorkey((255,255,255))
+ def render(self):
+     screen.blit(self.bitmap,(self.x,self.y))
+                        #ВЗАИМОДЕЙСТВИЕ ЦЕЛЕЙ
+def Intersect(x1,x2,y1,y2,db1,db2):
+ if (x1 > x2-db1) and (x1 < x2+db1) and (y1 > y2-db2) and (y1 < y2+db2):
+     return 1
+ else:
+     return 0
+                        #СОЗДАЁМ МЕНЮ
+class Menu():
+    #создаём список меню, с расположением, именем, цветом, цвет выбранного меню
+    #номер пункта 
+    def __init__(self, punkts = [140, 160, u"punkt" , (250,250,30),(250,30,250)]):
+     #передаём список команде Punkts
+     self.punkts = punkts
+     #отображаем повержность, где будем рисовать, экземпляр шрифта,номер активного элемената                                             
+    def render(self, poverhost, font, num_punkt):
+     #цикл фор, кот перебирает совпадает ли номер переданной функций
+     #если совпадает, то закрашивается цветом активного элемента
+        for i in self.punkts:
+          if num_punkt == i [5]:
+             poverhost.blit(font.render(i[2], 1, i[4]),(i[0], i[1]))
+          else:
+             poverhost.blit(font.render(i[2], 1, i[3]),(i[0], i[1]))
+    #Основная функция, которая реализует систему меню                                         
+    def menu(self):
+         done = True
+         #задаём шрифт
+         font_menu = pygame.font.SysFont("Blackoak Std",60)
+         # деактивируем залипание клавишщь чтобы работала кнопка ESCAPE
+         pygame.key.set_repeat(0,0)
+         #Делаем видимый курсор в меню
+         pygame.mouse.set_visible(True)
+         #хранение и использование переменной
+         punkt = 0
+         #цикл событий, закраска экрана, отрисовка объектов и отслеживание событий
+         while done:
+             #закрашиваем полоску таким же цветом, как и фон
+            info_string.fill((0,0,0))
+            screen.fill     ((0,0,0))
+            #задаём возможность использование мыши
+            #А так же задаём цикл, который проверяет, активна мышь в диапозоне
+            #или нет
+            mp = pygame.mouse.get_pos()
+            for i in self.punkts:
+                if mp[0]>i[0] and mp [0]< +360 and mp [1]>i[1] and mp[1]<i[1]+200:
+                    punkt = i[5]
+                    
+            self.render(screen, font_menu, punkt)
+            
+            for e in pygame.event.get():
+                if e.type == pygame.QUIT:
+#Функция, которая при вызове закрывает приложение полностью в любом месте
+                    sys.exit()
+#прописываем закрытие с помощью эскейпа
+                if e.type == pygame.KEYDOWN:
+                   if e.key == pygame.K_ESCAPE:
+                       sys.exit()                 
+#Блок навигаций меню с помощью клавишь
+                   if e.key == pygame.K_UP:
+                        if punkt > 0:
+                                 punkt -=1
+                   if e.key == pygame.K_DOWN:
+                        if punkt < len(self.punkts)-1:
+                                 punkt += 1             
+                                 
+#нажатие левой кнопки миши                                                  
+                if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
+                        if  punkt == 0:
+                             done = False
+                        elif punkt == 1:                      
+                             sys.exit()    
+            window.blit(info_string,(0,0))               
+            window.blit(screen, (0,30))
+            pygame.display.flip()                                    
+                        # ШРИФТЫ
+#Добавляем шрифты
+pygame.font.init()
+#задаём стандартные шрифты, и размер 32
+speed_font  = pygame.font.Font(None, 32)
+inf_font    = pygame.font.SysFont("Calibri",24)
+label_font  = pygame.font.SysFont("Blackoak Std", 24)
+arrow_color = 250
 
-# C extensions
-*.so
+                        # ЗАГРУЗКА СПРАЙТОВ                       
+hero = Sprite__init__(0, 0, 'h.png')
+zet  = Sprite__init__(1,100,"z.png")
+zet.right = False
+#задаём шаг скорости цели
+zet.step = 1
+#Клас стрела
+strela = Sprite__init__(300,300,"strela.png")
+# Задаём состояние push, то есть стрела может быть в 2 состояниях
+#заряжена= True и выпущена = False
+strela.push = False
+                       # РАСПОЛОЖЕНИЕ МЕНЮ
+#расположение меню                                                  
+punkts = [(240, 280, u"game",(250,250,30), (250,30,250),0),
+          (260, 420, u"quit",(250,250,30), (250,30,250),1)]
+#пункты меню
+game = Menu(punkts)
+game.menu()                                                 
+                       # ПОДГОТОВКА К ЗАПУСКУ МЕНЮ
+# Создаём цикл
+done= True
 
-# Distribution / packaging
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
+#Дублирование нажатие клавиши 
+#a=Сколько нужно подождать Мсек до следующего дублирование нажатие клавиши
+#B= задержка между следующими дублирование
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+pygame.key.set_repeat(1,1)
+pygame.time.delay(100)
+enumerator = 0
+while done:
+# цикл работает до тех пор, пока переменная E не станет False И будет 
+#  присвоена к QUIT, далее сбрасивает все значения,с помощью команды
+# event.get()
+#Обработчик событий
+#управление спрайтом
+ for e in pygame.event.get():
+     if e.type == pygame.QUIT:
+         done = False                  
+     if e.type == pygame.KEYDOWN:
+         if e.key == pygame.K_LEFT:
+             if hero.x > 10:
+                 hero.x -=2
+         if e.key == pygame.K_RIGHT:
+             if hero.x<450:
+                 hero.x +=2
+######### ОСь Y
+         if e.key == pygame.K_UP:
+             if hero.y > 200:
+                 hero.y -=2
+         if e.key == pygame.K_DOWN:
+             if hero.y < 450:
+                 hero.y +=2  
+    #запуск стрелы
+         if e.key == pygame.K_SPACE:
+             if strela.push == False:
+                 strela.y = hero.y+15
+                 strela.x = hero.x+15
+                 strela.push = True
+# Выход в меню с помощью escape                 
+         if e.key == pygame.K_ESCAPE:
+                 game.menu()
+             
+                 "Заливка"
+ screen.fill((255,250,255))
+ info_string.fill((45,80,40))
+#Изменение цвета названия
+ arrow_color +=2
+ if arrow_color >254:
+     arrow_color = 100
+##Собитие движения мыши
+ if e.type == pygame.MOUSEMOTION:
+#скрываем курсор
+     pygame.mouse.set_visible(False)
+#задаем параметры мыши, и область ее действия
+     m = pygame.mouse.get_pos()
+     if m[0]>10 and m[0] < 600:
+         hero.x = m[0]
+     if m[1]>200 and m[1] < 600:
+         hero.y = m[1]
+#cобытие нажатие мыши
+ if e.type == pygame.MOUSEBUTTONDOWN:
+     if e.button == 1:
+         if strela.push == False:
+             strela.x = hero.x+51
+             strela.y = hero.y
+             strela.push = True
+ ######### движение цели
+ if zet.right == True:
+     zet.x -= zet.step
+     if zet.x < 0:
+         zet.right = False 
+ else :
+     zet.x += zet.step
+     if zet.x >  550:
+         zet.right = True         
+         
+####### перемещение стрелы
+ if strela.y < 0:
+     strela.push = False
+     enumerator -=1
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+ if strela.push == False:
+     strela.y = hero.y
+     strela.x = hero.x+48
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.cache
-nosetests.xml
-coverage.xml
+ else:
+     strela.y -= 1
+    #Столкновение целей
+ if Intersect(strela.x, zet.x, strela.y, zet.y,5,40)== True:
+     strela.push = False
+     zet.step += 1
+     print("Есть!")
+     enumerator +=1
+     
+##Отрисовка объектов
+ strela.render()
+ zet.render()
+ hero.render()
+#отрисовка шрифтов
+ info_string.blit (speed_font.render(u"cкорость:"+str(zet.step),1,(210,120,250)),(10,5))
+ info_string.blit (inf_font.render  (u"Счет:"+str    (enumerator),1,(0,250,200)),(500,5))
+ info_string.blit (label_font.render(u"Стрелялка",1, (100,arrow_color,250)),(280,5))
+ 
 
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
+ 
+ window.blit(info_string,(0,0))
+ window.blit(screen,(0,30))
+ pygame.display.flip()
